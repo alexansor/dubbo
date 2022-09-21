@@ -107,6 +107,12 @@ public class ExtensionDirector implements ExtensionAccessor {
         return loader;
     }
 
+    /**
+     * 创建扩展加载器
+     * @param type
+     * @param <T>
+     * @return
+     */
     private <T> ExtensionLoader<T> createExtensionLoader(Class<T> type) {
         ExtensionLoader<T> loader = null;
         if (isScopeMatched(type)) {

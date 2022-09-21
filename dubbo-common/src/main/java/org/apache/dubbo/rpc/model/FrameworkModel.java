@@ -83,16 +83,21 @@ public class FrameworkModel extends ScopeModel {
     protected void initialize() {
         super.initialize();
 
+        // 初始化TypeBuilders
         TypeDefinitionBuilder.initBuilders(this);
 
+        // 初始化对应的FrameworkServiceRepository
         serviceRepository = new FrameworkServiceRepository(this);
 
+        // 初始化ScopeModelInitializer的扩展加载器
         ExtensionLoader<ScopeModelInitializer> initializerExtensionLoader = this.getExtensionLoader(ScopeModelInitializer.class);
+        // 遍历调用初始化器的initializeFrameworkModel注册bean
         Set<ScopeModelInitializer> initializers = initializerExtensionLoader.getSupportedExtensionInstances();
         for (ScopeModelInitializer initializer : initializers) {
             initializer.initializeFrameworkModel(this);
         }
 
+        // 创建并设置internalApplicationModel
         internalApplicationModel = new ApplicationModel(this, true);
         internalApplicationModel.getApplicationConfigManager().setApplication(
             new ApplicationConfig(internalApplicationModel, CommonConstants.DUBBO_INTERNAL_APPLICATION));
@@ -296,11 +301,16 @@ public class FrameworkModel extends ScopeModel {
         }
     }
 
+    /**
+     * 重置默认框架模型
+     */
     private static void resetDefaultFrameworkModel() {
         synchronized (globalLock) {
+            // 如果默认实例存在并且未销毁，直接返回
             if (defaultInstance != null && !defaultInstance.isDestroyed()) {
                 return;
             }
+            // 设置新的默认实例
             FrameworkModel oldDefaultFrameworkModel = defaultInstance;
             if (allInstances.size() > 0) {
                 defaultInstance = allInstances.get(0);

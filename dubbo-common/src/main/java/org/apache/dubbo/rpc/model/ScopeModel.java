@@ -39,6 +39,8 @@ public abstract class ScopeModel implements ExtensionAccessor {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ScopeModel.class);
 
     /**
+     * 不同类型的模型可以传递数据，用底层向上层传递
+     * 
      * The internal id is used to represent the hierarchy of the model tree, such as:
      * <ol>
      *     <li>1</li>
@@ -90,9 +92,13 @@ public abstract class ScopeModel implements ExtensionAccessor {
      * </ol>
      */
     protected void initialize() {
+        // 创建新的扩展控制器
         this.extensionDirector = new ExtensionDirector(parent != null ? parent.getExtensionDirector() : null, scope, this);
+        // 控制器添加对应scope的PostProcessor
         this.extensionDirector.addExtensionPostProcessor(new ScopeModelAwareExtensionProcessor(this));
+        // 构建对应scope的beanFactory
         this.beanFactory = new ScopeBeanFactory(parent != null ? parent.getBeanFactory() : null, extensionDirector);
+        // 初始化一些集合列表属性
         this.destroyListeners = new LinkedList<>();
         this.attributes = new ConcurrentHashMap<>();
         this.classLoaders = new ConcurrentHashSet<>();
