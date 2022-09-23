@@ -22,6 +22,10 @@ public interface LoadingStrategy extends Prioritized {
 
     String directory();
 
+    /**
+     * 是否使用使用ExtensionLoader的类加载器加载，默认为否
+     * @return
+     */
     default boolean preferExtensionClassLoader() {
         return false;
     }

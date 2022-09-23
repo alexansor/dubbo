@@ -937,6 +937,7 @@ public class ExtensionLoader<T> {
                         logger.error("Exception occurred when loading extension class (interface: " + type + ")", e);
                         throw new IllegalStateException("Exception occurred when loading extension class (interface: " + type + ")", e);
                     }
+                    // 缓存到cachedClasses中
                     cachedClasses.set(classes);
                 }
             }
@@ -953,7 +954,7 @@ public class ExtensionLoader<T> {
         cacheDefaultExtensionName();
 
         Map<String, Class<?>> extensionClasses = new HashMap<>();
-
+        // DubboInternalLoadingStrategy -> DubboLoadingStrategy -> ServicesLoadingStrategy，分别从3个目录读取配置，注意里面的override属性都是返回true，所以以后为主 
         for (LoadingStrategy strategy : strategies) {
             loadDirectory(extensionClasses, strategy, type.getName());
 
@@ -1008,6 +1009,7 @@ public class ExtensionLoader<T> {
         try {
             List<ClassLoader> classLoadersToLoad = new LinkedList<>();
 
+            // 使用ExtensionLoader的类加载器加载
             // try to load from ExtensionLoader's ClassLoader first
             if (loadingStrategy.preferExtensionClassLoader()) {
                 ClassLoader extensionLoaderClassLoader = ExtensionLoader.class.getClassLoader();
@@ -1016,6 +1018,7 @@ public class ExtensionLoader<T> {
                 }
             }
 
+            // 是否使用特殊的SPI加载策略加载
             if (specialSPILoadingStrategyMap.containsKey(type)){
                 String internalDirectoryType = specialSPILoadingStrategyMap.get(type);
                 //skip to load spi when name don't match
@@ -1071,6 +1074,7 @@ public class ExtensionLoader<T> {
     private void loadResource(Map<String, Class<?>> extensionClasses, ClassLoader classLoader,
                               java.net.URL resourceURL, boolean overridden, String[] includedPackages, String[] excludedPackages, String[] onlyExtensionClassLoaderPackages) {
         try {
+            // 获取文件内容
             List<String> newContentList = getResourceContent(resourceURL);
             String clazz;
             for (String line : newContentList) {
@@ -1081,6 +1085,7 @@ public class ExtensionLoader<T> {
                 line = line.trim();
                 if (line.length() > 0) {
                     try {
+                        // 拆解name类className
                         String name = null;
                         int i = line.indexOf('=');
                         if (i > 0) {
@@ -1178,6 +1183,14 @@ public class ExtensionLoader<T> {
         return false;
     }
 
+    /**
+     * 加载类，并添加到缓存中
+     * @param extensionClasses
+     * @param resourceURL
+     * @param clazz
+     * @param name
+     * @param overridden
+     */
     private void loadClass(Map<String, Class<?>> extensionClasses, java.net.URL resourceURL, Class<?> clazz, String name,
                            boolean overridden) {
         if (!type.isAssignableFrom(clazz)) {
@@ -1185,6 +1198,7 @@ public class ExtensionLoader<T> {
                 type + ", class line: " + clazz.getName() + "), class "
                 + clazz.getName() + " is not subtype of interface.");
         }
+        // 如果类被Adaptive注释，则添加到cachedAdaptiveClass中，而不是添加到extensionClasses
         if (clazz.isAnnotationPresent(Adaptive.class)) {
             cacheAdaptiveClass(clazz, overridden);
         } else if (isWrapperClass(clazz)) {
@@ -1218,6 +1232,7 @@ public class ExtensionLoader<T> {
     }
 
     /**
+     * 这里只添加class，不实例化
      * put clazz in extensionClasses
      */
     private void saveInExtensionClass(Map<String, Class<?>> extensionClasses, Class<?> clazz, String name, boolean overridden) {

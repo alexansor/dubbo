@@ -302,7 +302,8 @@ public class FrameworkModel extends ScopeModel {
     }
 
     /**
-     * 重置默认框架模型
+     * 重置默认框架模型，重新设置全局的frameworkInstance
+     * 这里返回还是有可能为null，所以返回需要判断是否为空，是的话要new一个
      */
     private static void resetDefaultFrameworkModel() {
         synchronized (globalLock) {
@@ -310,7 +311,7 @@ public class FrameworkModel extends ScopeModel {
             if (defaultInstance != null && !defaultInstance.isDestroyed()) {
                 return;
             }
-            // 设置新的默认实例
+            // 设置新的默认实例，构造器里面会将this添加到allInstances中
             FrameworkModel oldDefaultFrameworkModel = defaultInstance;
             if (allInstances.size() > 0) {
                 defaultInstance = allInstances.get(0);

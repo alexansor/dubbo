@@ -18,6 +18,7 @@ package org.apache.dubbo.common.extension;
 
 /**
  * Dubbo internal {@link LoadingStrategy}
+ * dubbo内部加载策略，包括加载SPI组件等
  *
  * @since 2.7.7
  */
