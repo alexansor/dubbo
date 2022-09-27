@@ -157,6 +157,7 @@ public abstract class AbstractConfigManager extends LifecycleAdapter {
 
         Map<String, AbstractConfig> configsMap = configsCache.computeIfAbsent(getTagName(config.getClass()), type -> new ConcurrentHashMap<>());
 
+        // 快速检查并返回，减少锁的使用
         // fast check duplicated equivalent config before write lock
         if (!(config instanceof ReferenceConfigBase || config instanceof ServiceConfigBase)) {
             for (AbstractConfig value : configsMap.values()) {

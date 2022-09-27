@@ -104,6 +104,10 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
      * <li>when the url is dubbo://224.5.6.7:1234/org.apache.dubbo.config.api.DemoService?application=dubbo-sample, then
      * the protocol is <b>DubboProtocol</b></li>
      * <p>
+     * 当 Extensionloader 初始化 Protocol 实例时，会自动包装3层，如下
+     * ProtocolSerializationWrapper
+     *     ProtocolFilterWrapper
+     *         ProtocolListenerWrapper
      * Actually，when the {@link ExtensionLoader} init the {@link Protocol} instants,it will automatically wrap three
      * layers, and eventually will get a <b>ProtocolSerializationWrapper</b> or <b>ProtocolFilterWrapper</b> or <b>ProtocolListenerWrapper</b>
      */
