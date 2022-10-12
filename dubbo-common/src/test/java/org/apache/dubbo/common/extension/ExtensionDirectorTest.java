@@ -44,6 +44,7 @@ public class ExtensionDirectorTest {
         // 1. SPI extension only be created in ExtensionDirector which matched scope
         // 2. Child ExtensionDirector can get extension instance from parent
         // 3. Parent ExtensionDirector can't get extension instance from child
+        // 总结：创建的话只能相同scope的director进行创建，但是获取父director不可以获取到子director的扩展实例，子可以获取到父的扩展实例
 
         ExtensionDirector fwExtensionDirector = new ExtensionDirector(null, ExtensionScope.FRAMEWORK, FrameworkModel.defaultModel());
         ExtensionDirector appExtensionDirector = new ExtensionDirector(fwExtensionDirector, ExtensionScope.APPLICATION, ApplicationModel.defaultModel());
@@ -88,6 +89,7 @@ public class ExtensionDirectorTest {
         // 1. Module scope SPI can be injected ModuleModel, ApplicationModel, FrameworkModel
         // 2. Application scope SPI can be injected ApplicationModel, FrameworkModel, but not ModuleModel
         // 3. Framework scope SPI can be injected FrameworkModel, but not ModuleModel, ApplicationModel
+        // 总结：srvModel可以获取到scopeModel，但是只能获取本身或者父scopeModel，不能获取子scopeModel
 
         FrameworkModel frameworkModel = new FrameworkModel();
         ApplicationModel applicationModel = new ApplicationModel(frameworkModel);
