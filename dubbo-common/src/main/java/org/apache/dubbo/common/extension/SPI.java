@@ -58,6 +58,7 @@ public @interface SPI {
 
     /**
      * default extension name
+     * SPI的value会作为extension默认名字，使用不允许使用逗号分割
      */
     String value() default "";
 

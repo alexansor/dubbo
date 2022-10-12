@@ -139,6 +139,7 @@ public class ExtensionLoader<T> {
 
     /**
      * Record all unacceptable exceptions when using SPI
+     * 记录使用SPI时不被允许的异常
      */
     private Set<String> unacceptableExceptions = new ConcurrentHashSet<>();
     private ExtensionDirector extensionDirector;
@@ -764,11 +765,13 @@ public class ExtensionLoader<T> {
      */
     @SuppressWarnings("unchecked")
     private T createExtension(String name, boolean wrap) {
+        // 调用getExtensionClasses加载指定接口的所有实现，并获取key的class
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null || unacceptableExceptions.contains(name)) {
             throw findException(name);
         }
         try {
+            // 从扩展缓存实例池中获取实例，如果不存在则创建
             T instance = (T) extensionInstances.get(clazz);
             if (instance == null) {
                 extensionInstances.putIfAbsent(clazz, createExtensionInstance(clazz));
@@ -932,7 +935,9 @@ public class ExtensionLoader<T> {
     }
 
     private Map<String, Class<?>> getExtensionClasses() {
+        // 从缓存类中获取，如果已经缓存了，则直接返回
         Map<String, Class<?>> classes = cachedClasses.get();
+        // 使用双重校验锁实现单例对象的创建
         if (classes == null) {
             synchronized (cachedClasses) {
                 classes = cachedClasses.get();
@@ -960,7 +965,8 @@ public class ExtensionLoader<T> {
         cacheDefaultExtensionName();
 
         Map<String, Class<?>> extensionClasses = new HashMap<>();
-        // DubboInternalLoadingStrategy -> DubboLoadingStrategy -> ServicesLoadingStrategy，分别从3个目录读取配置，注意里面的override属性都是返回true，所以以后为主 
+        // 默认使用3个记载策略进行加载，如下
+        // DubboInternalLoadingStrategy -> DubboLoadingStrategy -> ServicesLoadingStrategy，分别从3个目录读取配置，注意里面的override属性都是返回true，所以以后为主
         for (LoadingStrategy strategy : strategies) {
             loadDirectory(extensionClasses, strategy, type.getName());
 
@@ -997,6 +1003,7 @@ public class ExtensionLoader<T> {
             return;
         }
 
+        // defaultName也就是SPI的value值不允许使用逗号分割
         String value = defaultAnnotation.value();
         if ((value = value.trim()).length() > 0) {
             String[] names = NAME_SEPARATOR.split(value);
