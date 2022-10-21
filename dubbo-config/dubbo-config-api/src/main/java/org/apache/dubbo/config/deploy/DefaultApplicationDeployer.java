@@ -296,6 +296,8 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
      * For compatibility purpose, use registry as the default config center when
      * there's no config center specified explicitly and
      * useAsConfigCenter of registryConfig is null or true
+     * 
+     * 判断是否使用注册中心作为配置中心
      */
     private void useRegistryAsConfigCenterIfNecessary() {
         // we use the loading status of DynamicConfiguration to decide whether ConfigCenter has been initiated.

@@ -202,7 +202,9 @@ public class ExtensionLoader<T> {
         this.type = type;
         this.extensionDirector = extensionDirector;
         this.extensionPostProcessors = extensionDirector.getExtensionPostProcessors();
+        // 初始化创建实例策略
         initInstantiationStrategy();
+        // 初始化扩展注入器
         this.injector = (type == ExtensionInjector.class ? null : extensionDirector.getExtensionLoader(ExtensionInjector.class)
             .getAdaptiveExtension());
         this.activateComparator = new ActivateComparator(extensionDirector);
